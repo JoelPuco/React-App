@@ -1,0 +1,44 @@
+  version: '3.7'
+  services: 
+  #BASE DE DATOS
+    app-db:
+      image: mysql:5.7
+      environment: 
+        MYSQL_ROOT_PASSWORD: adminjoel
+        MYSQL_DATABASE: app-db
+      ports: 
+        - 3309:3306
+      networks: 
+        app-net:
+          ipv4_address: 10.0.0.9
+  #Proyecto REACT - API REST
+    react-app:
+      build: 
+        context: ./react-app-crud/build
+        dockerfile: Dockerfile
+      ports: 
+        - 3000:80
+      networks: 
+        app-net:
+          ipv4_address: 10.0.0.11
+  #Proyecto Laravel - API REST
+    api-laravel:
+      build: 
+        context: ./api-crud
+        dockerfile: Dockerfile
+      ports: 
+        - 8000:80
+      networks: 
+        app-net:
+          ipv4_address: 10.0.0.10
+      depends_on: 
+        - app-db
+  #RED
+  networks: 
+    app-net:
+      driver: bridge
+      ipam: 
+        driver: default
+        config: 
+          - 
+            subnet: 10.0.0.0/8
