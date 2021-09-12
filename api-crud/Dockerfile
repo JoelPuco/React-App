@@ -9,9 +9,10 @@ RUN php -r "unlink('composer-setup.php');"
 RUN mv composer.phar /usr/local/bin/composer
 RUN a2enmod rewrite
 
-COPY . ../
-COPY .env ../
-COPY ./public/ .
-RUN chmod -R 775 /var/www/storage
-RUN chown -R www-data:www-data /var/www
-RUN cd .. && composer install && php artisan migrate
+ENV COMPOSER_ALLOW_SUPERUSER 1
+COPY . .
+COPY .env .
+COPY 000-default.conf /etc/apache2/sites-available/000-default.conf
+RUN chmod -R 775 /var/www/html/storage
+RUN chown -R www-data:www-data /var/www/html
+RUN composer install && php artisan migrate
